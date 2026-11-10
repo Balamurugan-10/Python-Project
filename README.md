@@ -50,4 +50,4 @@ Upon completion, the program generates the following output files in the directo
 
 Figures: MgO_XRD_pattern.png, MgO_FTIR_Spectrum.png
 
-Data Tables: MgO_Scherrer_results.csv, MgO_FTIR_Results.csv
+Data Tables: MgO_FTIR_Results.csv
