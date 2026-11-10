@@ -6,8 +6,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
-from scipy.optimize import curve_fit
+
 
 # ============================================================
 # STEP 1: Load the CSV file
@@ -15,7 +14,7 @@ from scipy.optimize import curve_fit
 
 # Read the CSV file into a pandas DataFrame
 # Change this path to wherever your CSV file is saved
-file_path = # Enter your dataset file path
+file_path = r"D:\SRM classes\7th Sem\Python programming\Project\MgO_XRD_sample.csv"
 
 df = pd.read_csv(file_path)
 
@@ -84,8 +83,53 @@ height_threshold = np.mean(smooth_intensity) + 1.5 * np.std(smooth_intensity)
 prominence_value = 30        # adjust if you miss peaks or get too many
 distance_value   = 50        # minimum separation between peaks (data points)
 
+def find_peaks_numpy(y, height=None, prominence=None, distance=1):
+    """Simple NumPy replacement for scipy.signal.find_peaks."""
+    y = np.asarray(y)
+    n = len(y)
+
+    # Candidate peaks: higher than both neighbours
+    # (>= on the right handles flat tops)
+    cand = np.where((y[1:-1] > y[:-2]) & (y[1:-1] >= y[2:]))[0] + 1
+
+    # Height filter
+    if height is not None:
+        cand = cand[y[cand] >= height]
+
+    # Prominence filter
+    if prominence is not None:
+        keep = []
+        for p in cand:
+            # walk left until a higher point is found
+            left_min = y[p]
+            i = p - 1
+            while i >= 0 and y[i] <= y[p]:
+                left_min = min(left_min, y[i])
+                i -= 1
+            # walk right until a higher point is found
+            right_min = y[p]
+            j = p + 1
+            while j < n and y[j] <= y[p]:
+                right_min = min(right_min, y[j])
+                j += 1
+            prom = y[p] - max(left_min, right_min)
+            if prom >= prominence:
+                keep.append(p)
+        cand = np.array(keep, dtype=int)
+
+    # Distance filter: keep the tallest peaks first, drop close neighbours
+    if distance is not None and distance > 1 and len(cand) > 0:
+        order = cand[np.argsort(y[cand])[::-1]]
+        selected = []
+        for p in order:
+            if all(abs(p - s) >= distance for s in selected):
+                selected.append(p)
+        cand = np.array(sorted(selected), dtype=int)
+
+    return cand, {}
+
 # find_peaks returns the INDEX positions of the peaks
-peak_indices, peak_properties = find_peaks(
+peak_indices, peak_properties = find_peaks_numpy(
     smooth_intensity,
     height=height_threshold,
     prominence=prominence_value,
@@ -327,10 +371,10 @@ import matplotlib.pyplot as plt
 # ============================================================
 
 # Change this to the name of your FTIR CSV file
-file_path = # Enter your dataset file path
+file_path = r"D:\SRM classes\7th Sem\Python programming\Project\MgO_FTIR_digitized.csv"
 
 # Folder where the graph and results will be saved
-output_folder = # Enter your output file path
+output_folder = r"D:\SRM classes\7th Sem\Python programming\Project"
 
 # Read the CSV file into a pandas DataFrame
 df = pd.read_csv(file_path)
@@ -513,7 +557,7 @@ ax1.set_xlim(4000, 500)
 # Labels, title, grid, legend
 ax1.set_ylabel("Transmittance", fontsize=12)
 ax1.set_title("FTIR Spectrum of MgO Nanoparticles", fontsize=14)
-ax2.set_xlabel("Wavenumber (cm^{-1}$)", fontsize=12)
+ax2.set_xlabel("Wavenumber (cm$^{-1}$)", fontsize=12)
 ax2.set_ylabel("Absorbance  A = -log$_{10}$(T)", fontsize=12)
 ax1.legend(fontsize=10)
 ax2.legend(fontsize=10)
