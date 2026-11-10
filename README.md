@@ -16,7 +16,8 @@ Required Libraries: Install the necessary dependencies using pip:pip install num
 
 Instructions to Execute the Program:
 
-Clone or Download the Repository:git clone https://github.com/your-username/MgO-Nanoparticle-Characterization.git
+Clone or Download the Repository:
+git clone (https://github.com/your-username/MgO-Nanoparticle-Characterization.git)
 cd MgO-Nanoparticle-Characterization
 
 Prepare Data Files:
