@@ -169,7 +169,7 @@ MgO-Nanoparticle-Characterization/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/MNADITYA05/MgO-Nanoparticle-Characterization.git
+git clone https://github.com/Balamurugan-10/MgO-Nanoparticle-Characterization.git
 cd MgO-Nanoparticle-Characterization
 ```
 
